@@ -1,0 +1,182 @@
+<?php
+    
+    $weather = "";
+    $error = "";
+    
+    if (array_key_exists('city', $_GET)) {
+        
+        $city = str_replace(' ', '', $_GET['city']);
+        
+        $file_headers = @get_headers("http://www.weather-forecast.com/locations/".$city."/forecasts/latest");
+        
+        
+        if($file_headers[0] == 'HTTP/1.1 404 Not Found') {
+    
+            $error = "That city could not be found.";
+
+        } else {
+        
+        $forecastPage = file_get_contents("http://www.weather-forecast.com/locations/".$city."/forecasts/latest");
+        
+        $pageArray = explode('3 Day Weather Forecast Summary:</b><span class="read-more-small"><span class="read-more-content"> <span class="phrase">', $forecastPage);
+            
+        if (sizeof($pageArray) > 1) {
+        
+                $secondPageArray = explode('</span></span></span>', $pageArray[1]);
+            
+                if (sizeof($secondPageArray) > 1) {
+
+                    $weather = $secondPageArray[0];
+                    
+                } else {
+                    
+                    $error = "That city could not be found.";
+                    
+                }
+            
+            } else {
+            
+                $error = "That city could not be found.";
+            
+            }
+        
+        }
+        
+    }
+    ?>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+   <link rel="shortcut icon" href="logo.ico" />
+   <title >SMF Inc. Weather App</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+     <style type="text/css">
+      
+      body { 
+          background: url(Capture1.jpg) no-repeat center center ; 
+          -webkit-background-size: cover;
+          -moz-background-size: cover;
+          -o-background-size: cover;
+          background-size: cover;
+
+        }
+        span {
+                  display: inline-block;
+                  vertical-align: middle;
+                  line-height: normal;
+                }
+                  /* do not group these rules */
+            *::-webkit-input-placeholder {
+                color: red;
+            }
+            *:-moz-placeholder {
+                /* FF 4-18 */
+                color: red;
+            }
+            *::-moz-placeholder {
+                /* FF 19+ */
+                color: red;
+            }
+            *:-ms-input-placeholder {
+                /* IE 10+ */
+                color: red;
+            }
+}  
+          }
+          
+    </style>
+  </head>
+  <body style="text-align: center;height:700px;">     
+  <div style="opacity: 1">
+  <h1 style="margin-top: 200px;color:white;font: 200%;"><img src="logo.ico"> SMF </h1>
+  <h1 style="color:black;font: 200%;">My Weather app</h1>
+  
+  <form>
+          <div class="form-group">
+          
+
+            <label for="city"><h2 style="font: 200%;color: white;">How's The Weather??</h2></label>
+            <div class="input-group input-group-lg" style="width: 420px;margin-left: auto;margin-right: auto;">
+               <span class="input-group-addon" id="basic-addon1" style="background:transparent;color: white;border: 1px solid;border-color: white;">City </span>
+               <input type="text" class="form-control" id="city" name="city" placeholder="Enter place like Tokyo, London" style="border: none;background:transparent;color: white;border: 1px solid;border-color: white;width: 100px;text-decoration-color: white" value="<?php 
+                                                       
+                                                       if (array_key_exists('city', $_GET)) {
+                                                       
+                                                       echo $_GET['city']; 
+                                                       
+                                                       }
+                                                       
+                                                       ?>">
+            </div>
+          </div>
+         
+          <button type="submit" class="btn btn-success">Submit</button>
+          <br><br>
+   </form>
+    <div id="weather" style="width: 60%;height:400px;margin-top: 10 px;margin-bottom: auto; ;margin-left: auto;margin-right: auto;">
+          <?php 
+              if ($weather) 
+              {
+    
+              preg_match('/(.*)(hot)(.*)/i',$weather, $matches1, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(dry)(.*)/i',$weather, $matches2, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(sunny)(.*)/i',$weather, $matches3, PREG_OFFSET_CAPTURE);
+              
+
+              preg_match('/(.*)(rain)(.*)/i',$weather, $matches4, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(storm)(.*)/i',$weather, $matches5, PREG_OFFSET_CAPTURE);
+              
+
+
+              preg_match('/(.*)(cool)(.*)/i',$weather, $matches6, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(plesant)(.*)/i',$weather, $matches7, PREG_OFFSET_CAPTURE);
+              
+              
+
+
+              
+
+              preg_match('/(.*)(chilly)*(.*)/i',$weather, $matches8, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(cold)(.*)/i',$weather, $matches9, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(freezing)(.*)/i',$weather, $matches10, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(frosty)(.*)/i',$weather, $matches11, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(fog)(.*)/i',$weather, $matches12, PREG_OFFSET_CAPTURE);
+              preg_match('/(.*)(cold)(.*)/i',$weather, $matches13, PREG_OFFSET_CAPTURE);
+
+              
+          
+                   if (($matches1 or  $matches3) and ($matches6 or $matches7)) 
+                   {echo '<div style = "background-image :url(sun.jpg) ; color : white;padding:50px; border : 1px solid white;min-width:100px; height: 300px " role="alert">'.$weather.'</div>';}
+                   else if ($matches1 or $matches2 or $matches3) 
+                   {echo '<div style = "background-image :url(sun1.jpg) ; color : white;padding:50px; border : 1px solid white;min-width:100px;height: 300px " role="alert"><span>'.$weather.'</span></div>';}
+                   else if ($matches4 or $matches5) 
+                   {echo '<div style = "background-image :url(rain.jpg) ; color : white;padding:50px; border : 1px solid white;min-width:100px;height: 300px " role="alert"><span>'.$weather.'</span></div>';}
+                   else if ($matches8 or $matches9 or $matches10 or $matches11 or $matches12 or $matches13) 
+                   {echo '<div style = "background-image :url(cold.jpg) ; color : white;padding:50px; border : 1px solid white;min-width:100px;height: 300px " role="alert"><span>'.$weather.'</span></div>';}
+                   
+                   else 
+                   {echo  '<div class="alert alert-success" role="alert">'.$weather.'</div>';}
+              }
+                   
+                  else if ($error) 
+                  {echo '<div class="alert alert-danger" role="alert">'.$error.'</div>';}
+
+          ?>
+              
+      </div>
+      </div>
+      </div>
+     </body>
+
+    <!--sunny, warm, hot,  cool, chilly, cold, freezing, icy, frosty;cold, rainy, wet, humid, dry, arid, frigid, foggy, windy, stormy, breezy, windless -->
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+  </body>
+</html>
